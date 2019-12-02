@@ -1,1 +1,1 @@
-web: node server -ssl
+web: node server --ssl

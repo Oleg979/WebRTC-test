@@ -4,14 +4,14 @@ var fs = require('fs');
 
 // don't forget to use your own keys!
 var options = {
-    // key: fs.readFileSync('fake-keys/privatekey.pem'),
-    // cert: fs.readFileSync('fake-keys/certificate.pem')
-    key: fs.readFileSync('./fake-keys/privatekey.pem'),
-    cert: fs.readFileSync('./fake-keys/certificate.pem')
+    key: fs.readFileSync('./real-keys/key.pem'),
+    cert: fs.readFileSync('./real-keys/cert.pem')
+    //key: fs.readFileSync('./fake-keys/privatekey.pem'),
+    //cert: fs.readFileSync('./fake-keys/certificate.pem')
 };
 
 // HTTPs server
-var app = require('https').createServer(options, function(request, response) {
+var app = require('http').createServer(function(request, response) {
     response.writeHead(200, {
         'Content-Type': 'text/html'
     });
@@ -38,7 +38,10 @@ io.set('transports', [
 var channels = {};
 
 io.sockets.on('connection', function (socket) {
-    //socket.send('123456');
+
+    console.log("CONNECTED");
+    socket.on("hello", data => console.log("HELLO FROM PROXY"));
+
     var initiatorChannel = '';
     if (!io.isConnected) {
         io.isConnected = true;
@@ -70,7 +73,6 @@ io.sockets.on('connection', function (socket) {
 
 function onNewNamespace(channel, sender) {
     io.of('/' + channel).on('connection', function (socket) {
-        //socket.send('123456');
         console.log("connect to channel: " + channel);
         var username;
         if (io.isConnected) {
@@ -97,7 +99,6 @@ function onNewNamespace(channel, sender) {
     });
 }
 
-// run app
 
 app.listen(process.env.PORT || 9559);
 
